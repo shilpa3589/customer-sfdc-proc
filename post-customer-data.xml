@@ -1,0 +1,105 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<mule xmlns:db="http://www.mulesoft.org/schema/mule/db" xmlns:ee="http://www.mulesoft.org/schema/mule/ee/core"
+	xmlns="http://www.mulesoft.org/schema/mule/core"
+	xmlns:doc="http://www.mulesoft.org/schema/mule/documentation" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://www.mulesoft.org/schema/mule/core http://www.mulesoft.org/schema/mule/core/current/mule.xsd
+http://www.mulesoft.org/schema/mule/ee/core http://www.mulesoft.org/schema/mule/ee/core/current/mule-ee.xsd
+http://www.mulesoft.org/schema/mule/db http://www.mulesoft.org/schema/mule/db/current/mule-db.xsd">
+	<sub-flow name="post-customer-dataSub_Flow" doc:id="ed14eff1-82eb-4293-822b-e9a425897b91" >
+		<logger level="INFO" doc:name="Logger" doc:id="96300f42-fd0e-4fe6-8c0b-dc4d632fb37f" message="Start insert customer date" />
+		<ee:transform doc:name="Transform Message" doc:id="9de29108-2f6f-46ec-acea-96570e28fa69">
+			<ee:message>
+				<ee:set-payload><![CDATA[%dw 2.0
+output application/json
+---
+{
+    "customerId": uuid(),
+    "personalInformation":{
+        "firstName": payload.firstName,
+    "lastName": payload.lastName,
+    "companyName": payload.companyName,
+    "email": payload.email,
+    "phone": payload.phone },
+    "address":[
+        {
+      "street": "Steinbrueckstrasse",
+      "houseNumber": 114,
+      "city": "Nuremberg",
+      "country": "Germany",
+      "postalCode": "90408"
+    }
+    ]
+    
+} ]]></ee:set-payload>
+			</ee:message>
+		</ee:transform>
+		<try doc:name="Try" doc:id="7f87ba1a-acfe-4930-84ca-39f778fcffed" >
+			<db:insert doc:name="Insert" doc:id="e8806cc9-29c7-4809-9333-5b71cbddbaf1" config-ref="Database_Config">
+			<db:sql><![CDATA[INSERT INTO cutomer 
+VALUES(:customerId,:firstName,:lastName,:companyName,:email,:phone)]]></db:sql>
+			<db:input-parameters><![CDATA[#[payload]]]></db:input-parameters>
+		</db:insert>
+			<error-handler >
+				<on-error-propagate enableNotifications="true" logException="true" doc:name="On Error Propagate" doc:id="b53fe4e7-8cb6-46ae-80a7-b7ece5a3a4d5" type="DB:CONNECTIVITY">
+					<logger level="INFO" doc:name="Logger" doc:id="4f24d2d3-a148-467f-88f7-1f1b325c3121" message="System is not avilble please try after some time"/>
+				</on-error-propagate>
+			</error-handler>
+		</try>
+	</sub-flow>
+	<sub-flow name="put-customer-dataSub_Flow" doc:id="9256ec7d-6ed6-4a27-a6c2-26bf6abe16cb" >
+		<logger level="INFO" doc:name="Logger" doc:id="f296cebe-884b-4cc6-82c3-7b6ab99956f9" message="Start update customer date"/>
+		<ee:transform doc:name="Transform Message" doc:id="2d517fd8-1cda-44bf-9815-53c3cc66daf7" >
+			<ee:message >
+				<ee:set-payload ><![CDATA[%dw 2.0
+output application/json
+---
+{
+    "customerId": payload.customerId,
+    "personalInformation":{
+        "firstName": payload.firstName,
+    "lastName": payload.lastName,
+    "companyName": payload.companyName,
+    "email": payload.email,
+    "phone": payload.phone },
+    "address":[
+        {
+      "street": "Steinbrueckstrasse",
+      "houseNumber": 114,
+      "city": "Nuremberg",
+      "country": "Germany",
+      "postalCode": "90408"
+    }
+    ]
+    
+} ]]></ee:set-payload>
+			</ee:message>
+		</ee:transform>
+		<try doc:name="Try" doc:id="6af95a91-eb6b-4532-bea2-074fb64bcf51" >
+			<db:update doc:name="Update" doc:id="99060851-6527-491e-a2af-47bad1269f4a" config-ref="Database_Config">
+			<db:sql><![CDATA[UPDATE cutomer SET 
+firstName = :firstName, lastName = :lastName, companyName = :companyName,email = :email,phone = :phone
+WHERE customerId= :customerId]]></db:sql>
+			<db:input-parameters><![CDATA[#[payload]]]></db:input-parameters>
+		</db:update>
+			<error-handler >
+				<on-error-propagate enableNotifications="true" logException="true" doc:name="On Error Propagate" doc:id="92a1eca1-3fab-4915-a8be-85f9cc60a18c" type="DB:CONNECTIVITY">
+					<logger level="INFO" doc:name="Logger" doc:id="0aea17c6-b6ea-4fe0-8daf-da881ecff453" message="System is not avilble please try after some time"/>
+				</on-error-propagate>
+			</error-handler>
+		</try>
+	</sub-flow>
+	<sub-flow name="get-customer-dataSub_Flow" doc:id="36699df7-9f2f-4d25-aeeb-6a09a2066c12" >
+		<logger level="INFO" doc:name="Logger" doc:id="80f741b5-c5e3-4040-935f-ee26ff7b0b57" message="start the get customer data flow"/>
+		<try doc:name="Try" doc:id="99372902-3570-44e1-b80e-91f6e1c16974" >
+			<db:select doc:name="Select" doc:id="570ef6d0-e936-4eef-9afc-a591ac3aa095" config-ref="Database_Config">
+			<db:sql><![CDATA[SELECT * FROM customer WHERE customerId= :customerId]]></db:sql>
+			<db:input-parameters><![CDATA[#[{customerId: payload.customerId}]]]></db:input-parameters>
+		</db:select>
+			<error-handler >
+				<on-error-propagate enableNotifications="true" logException="true" doc:name="On Error Propagate" doc:id="590b0c52-9175-44e6-9c5d-48ccd825c6c6" >
+					<logger level="INFO" doc:name="Logger" doc:id="d534be7b-7f6b-49a0-97af-525262229d04" message="System is not avilble please try after some time"/>
+				</on-error-propagate>
+			</error-handler>
+		</try>
+	</sub-flow>
+</mule>

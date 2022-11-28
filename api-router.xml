@@ -1,0 +1,33 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<mule xmlns:doc="http://www.mulesoft.org/schema/mule/documentation" xmlns="http://www.mulesoft.org/schema/mule/core" xmlns:apikit="http://www.mulesoft.org/schema/mule/mule-apikit" xmlns:ee="http://www.mulesoft.org/schema/mule/ee/core" xmlns:http="http://www.mulesoft.org/schema/mule/http" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://www.mulesoft.org/schema/mule/core http://www.mulesoft.org/schema/mule/core/current/mule.xsd http://www.mulesoft.org/schema/mule/http http://www.mulesoft.org/schema/mule/http/current/mule-http.xsd http://www.mulesoft.org/schema/mule/mule-apikit http://www.mulesoft.org/schema/mule/mule-apikit/current/mule-apikit.xsd http://www.mulesoft.org/schema/mule/ee/core http://www.mulesoft.org/schema/mule/ee/core/current/mule-ee.xsd ">
+    <http:listener-config name="customer-test-api-httpListenerConfig">
+        <http:listener-connection host="0.0.0.0" port="8081" />
+    </http:listener-config>
+    <apikit:config name="customer-test-api-config" api="customer-test-api.raml" outboundHeadersMapName="outboundHeaders" httpStatusVarName="httpStatus" raml="api\customer-test-api.raml"/>
+	<flow name="customer-test-api-main">
+        <http:listener config-ref="customer-test-api-httpListenerConfig" path="/api/*">
+            <http:response statusCode="#[vars.httpStatus default 200]">
+                <http:headers>#[vars.outboundHeaders default {}]</http:headers>
+            </http:response>
+            <http:error-response statusCode="#[vars.httpStatus default 500]">
+                <http:body>#[payload]</http:body>
+                <http:headers>#[vars.outboundHeaders default {}]</http:headers>
+            </http:error-response>
+        </http:listener>
+        <apikit:router config-ref="customer-test-api-config" />
+		
+       
+    </flow>
+    <flow name="put:\updateCustomer\CustomerID:customer-test-api-config" doc:id="f390c328-74b6-46c7-b2a2-270994f6e48b">
+        <flow-ref doc:name="Flow Reference to put-customer-dataSub_Flow" doc:id="099b56dc-30dc-4831-b1a7-9bbb2b2838eb" name="put-customer-dataSub_Flow"/>
+		
+    </flow>
+    <flow name="get:\search\CustomerID:customer-test-api-config">
+        <flow-ref doc:name="Flow Reference get-customer-dataSub_Flow" doc:id="edfaf616-3ed6-423f-b922-57113d473852" name="get-customer-dataSub_Flow"/>
+		
+    </flow>
+    <flow name="post:\addCustomer:customer-test-api-config">
+        <flow-ref doc:name="Flow Reference post-customer-dataSub_Flow" doc:id="f7ae873c-4a7e-47db-9a45-1ec6fd55dc50" name="post-customer-dataSub_Flow"/>
+		
+    </flow>
+</mule>
