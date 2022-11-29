@@ -1,0 +1,86 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<mule xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+	xmlns:munit="http://www.mulesoft.org/schema/mule/munit" xmlns:munit-tools="http://www.mulesoft.org/schema/mule/munit-tools"
+	xmlns="http://www.mulesoft.org/schema/mule/core" xmlns:doc="http://www.mulesoft.org/schema/mule/documentation"
+	xsi:schemaLocation="
+		http://www.mulesoft.org/schema/mule/core http://www.mulesoft.org/schema/mule/core/current/mule.xsd
+		http://www.mulesoft.org/schema/mule/munit http://www.mulesoft.org/schema/mule/munit/current/mule-munit.xsd
+		http://www.mulesoft.org/schema/mule/munit-tools  http://www.mulesoft.org/schema/mule/munit-tools/current/mule-munit-tools.xsd">
+	<munit:config name="api-test-suite.xml" />
+	<munit:test name="api-test-suite-customer-test-api-mainTest" doc:id="30a0a571-e0f3-4cb2-87ab-df8ce2f59eba" description="Test">
+		<munit:behavior >
+			<munit:set-event doc:name="Set Event" doc:id="3ab7d2da-801d-47e1-8d29-03e58100d141" >
+				<munit:payload value='{&#10;  "customerId": "4d4de7d6-7f5e-4778-9c70-babba6c25c55",&#10;  "firstName": "Ulrich",&#10;  "lastName": "Nielsen",&#10;  "companyName": "E-ffoc",&#10;  "email": "ulrichN@effoc.com",&#10;  "phone": "+494341927420"&#10;}' />
+			</munit:set-event>
+		</munit:behavior>
+		<munit:execution >
+			<flow-ref doc:name="Flow-ref to customer-test-api-main" doc:id="880d9170-9940-4afa-9a5d-fdd9cdac6381" name="customer-test-api-main"/>
+		</munit:execution>
+		<munit:validation >
+			<munit-tools:assert-that doc:name="Assert that" doc:id="c9de673d-8677-4364-acf0-567697901210" expression="payload" is="#[MunitTools::notNullValue()]"/>
+		</munit:validation>
+	</munit:test>
+	<munit:test name="api-test-suite-put:\updateCustomer\CustomerID:customer-test-api-configTest" doc:id="b8fff76a-f572-43e7-b06c-d1e42d154cbb" description="Test">
+		<munit:behavior >
+			<munit:set-event doc:name="Set Event" doc:id="31be183b-8338-40ea-8878-053668dbd126" >
+				<munit:payload value='{&#10;  "customerId": "4d4de7d6-7f5e-4778-9c70-babba6c25c55",&#10;  "firstName": "Ulrich",&#10;  "lastName": "Nielsen",&#10;  "companyName": "E-ffoc",&#10;  "email": "ulrichN@effoc.com",&#10;  "phone": "+494341927420"&#10;}' />
+			</munit:set-event>
+			<munit-tools:mock-when doc:name="Mock when" doc:id="2666c084-d366-4143-90cc-667ff5729305" processor="db:update">
+				<munit-tools:with-attributes >
+					<munit-tools:with-attribute whereValue="Update" attributeName="doc:name" />
+					<munit-tools:with-attribute whereValue="99060851-6527-491e-a2af-47bad1269f4a" attributeName="doc:id" />
+				</munit-tools:with-attributes>
+			</munit-tools:mock-when>
+		</munit:behavior>
+		<munit:execution >
+			<flow-ref doc:name="Flow-ref to put:\updateCustomer\CustomerID:customer-test-api-config" doc:id="0b7f710c-cbd4-45df-858f-d533e510338e" name="put:\updateCustomer\CustomerID:customer-test-api-config"/>
+		</munit:execution>
+		<munit:validation >
+			<munit-tools:assert-that doc:name="Assert that" doc:id="6cd3b28e-5970-4afe-addf-79e54417370f" expression="payload" is="#[MunitTools::notNullValue()]"/>
+		</munit:validation>
+	</munit:test>
+	<munit:test name="api-test-suite-get:\search\CustomerID:customer-test-api-configTest" doc:id="5c12f52a-6cdf-42d3-af3b-c339015b5f4a" description="Test">
+		<munit:behavior >
+			<munit:set-event doc:name="Set Event" doc:id="da63faf8-9b64-4c70-bf5b-e82b80356cad" >
+				<munit:payload value='{&#10;  "customerId": "4d4de7d6-7f5e-4778-9c70-babba6c25c55",&#10;  "firstName": "Ulrich",&#10;  "lastName": "Nielsen",&#10;  "companyName": "E-ffoc",&#10;  "email": "ulrichN@effoc.com",&#10;  "phone": "+494341927420"&#10;}' />
+			</munit:set-event>
+			<munit-tools:mock-when doc:name="Mock when" doc:id="10607d68-4977-4524-a9f0-d74d0fb1bf6a" processor="db:select">
+				<munit-tools:with-attributes >
+					<munit-tools:with-attribute whereValue="Select" attributeName="doc:name" />
+					<munit-tools:with-attribute whereValue="570ef6d0-e936-4eef-9afc-a591ac3aa095" attributeName="doc:id" />
+				</munit-tools:with-attributes>
+				<munit-tools:then-return >
+					<munit-tools:payload value='{&#10;  "customerId": "4d4de7d6-7f5e-4778-9c70-babba6c25c55",&#10;  "firstName": "Ulrich",&#10;  "lastName": "Nielsen",&#10;  "companyName": "E-ffoc",&#10;  "email": "ulrichN@effoc.com",&#10;  "phone": "+494341927420"&#10;}' />
+				</munit-tools:then-return>
+			</munit-tools:mock-when>
+		</munit:behavior>
+		<munit:execution >
+			<flow-ref doc:name="Flow-ref to get:\search\CustomerID:customer-test-api-config" doc:id="6698d2a1-69a0-4567-a7e7-fdd555fcca15" name="get:\search\CustomerID:customer-test-api-config"/>
+		</munit:execution>
+		<munit:validation >
+			<munit-tools:assert-that doc:name="Assert that" doc:id="0b62d8dd-4733-48fe-bd86-471208e83b57" expression="payload" is="#[MunitTools::notNullValue()]"/>
+		</munit:validation>
+	</munit:test>
+	<munit:test name="api-test-suite-post:\addCustomer:customer-test-api-configTest" doc:id="72fe9b9b-8a88-474d-8803-dc87b644d119" description="Test">
+		<munit:behavior >
+			<munit:set-event doc:name="Set Event" doc:id="be105fff-0b29-4f60-b9fe-ca508d45b0ab" >
+				<munit:payload value='{&#10;  "customerId": "4d4de7d6-7f5e-4778-9c70-babba6c25c55",&#10;  "firstName": "Ulrich",&#10;  "lastName": "Nielsen",&#10;  "companyName": "E-ffoc",&#10;  "email": "ulrichN@effoc.com",&#10;  "phone": "+494341927420"&#10;}' />
+			</munit:set-event>
+			<munit-tools:mock-when doc:name="Mock when" doc:id="30664465-5be0-48f3-86b7-38491cb05e7d" processor="db:insert">
+				<munit-tools:with-attributes >
+					<munit-tools:with-attribute whereValue="Insert" attributeName="doc:name" />
+					<munit-tools:with-attribute whereValue="e8806cc9-29c7-4809-9333-5b71cbddbaf1" attributeName="doc:id" />
+				</munit-tools:with-attributes>
+			</munit-tools:mock-when>
+		</munit:behavior>
+		<munit:execution >
+			<flow-ref doc:name="Flow-ref to post:\addCustomer:customer-test-api-config" doc:id="ffccbb95-0a01-48ec-a634-d750bf6689fa" name="post:\addCustomer:customer-test-api-config"/>
+		</munit:execution>
+		<munit:validation >
+			<munit-tools:assert-that doc:name="Assert that" doc:id="6f5068c3-445c-4a78-9308-0ea633ebc6d7" expression="payload" is="#[MunitTools::notNullValue()]"/>
+		</munit:validation>
+	</munit:test>
+
+
+</mule>

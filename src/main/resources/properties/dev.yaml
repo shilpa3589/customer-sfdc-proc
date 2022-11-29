@@ -1,0 +1,5 @@
+db:
+ hostName: "abc.com"
+ port: "123"
+ userName: "testdb"
+ pwd: "encrytedpwd"
